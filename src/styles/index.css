@@ -1,0 +1,17 @@
+@import './tailwind.css';
+@import './config.css';
+
+html {
+    width: 100%;
+}
+
+body {
+    width: 100%;
+    min-height: 100%;
+    overscroll-behavior: none;
+}
+
+#root {
+    width: 100%;
+    min-height: 100%;
+}

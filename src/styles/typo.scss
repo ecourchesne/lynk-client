@@ -1,0 +1,56 @@
+@font-face {
+    font-family: 'Montech';
+    src: url('../assets/fonts/montech_medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montech';
+    src: url('../assets/fonts/montech_regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montech';
+    src: url('../assets/fonts/montech_light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+:root {
+    --montech: 'Montech', monospace;
+    --poppins: 'Poppins', sans-serif;
+}
+
+:where(body) {
+    font-family: var(--poppins);
+    font-weight: 300;
+    color: var(--white-60);
+}
+
+:where(body h1, body h2, body h3, body h4, body h5, body h6, body button) {
+    font-family: var(--montech);
+    font-weight: 500;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+
+    color: var(--white);
+}
+
+.simple-link {
+    color: var(--white);
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.lighted {
+    text-shadow: 0 0 15px var(--white), 0 0 30px var(--white-60);
+}
