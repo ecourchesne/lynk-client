@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique @db.VarChar(50)
+  firstName String  @db.VarChar(30)
+  lastName  String  @db.VarChar(30)
+  password  String  @db.VarChar(128)
+  role      String  @db.VarChar(30)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client   Client?
+
+  @@index([email])
+}
+
+model Client {
+  id        Int     @id @default(autoincrement())
+  userId    Int     @unique
+  type      String  @db.VarChar(20) // To differentiate between 'COMMERCIAL' and 'PERSONAL'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // One-to-One relations with specific client types
+  commercial  CommercialClient?
+  personal    PersonalClient?
+
+  @@index([userId])
+}
+
+model CommercialClient {
+  clientId  Int      @id
+  companyId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+ 
+  // Relations
+  client    Client   @relation(fields: [clientId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  @@index([clientId])
+  @@index([companyId])
+}
+
+model PersonalClient {
+  clientId  Int      @id
+  decoderId Int   @unique  // Make unique for one-to-one relation
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  client    Client   @relation(fields: [clientId], references: [id])
+  decoder   Decoder  @relation(fields: [decoderId], references: [id])
+
+  @@index([decoderId])
+}
+
+model Decoder {
+  id        Int     @id @default(autoincrement())
+  model         String   @db.VarChar(100)
+  state         String   @db.VarChar(10)  // Will be either "active" or "inactive"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  subscriptions SubscriptionItem[]
+  personalClient PersonalClient?  // One-to-one relation with PersonalClient
+  companyId     Int?
+  company       Company? @relation(fields: [companyId], references: [id])
+
+  @@index([state])
+}
+
+model SubscriptionItem {
+  id        Int     @id @default(autoincrement())
+  type      String   @db.VarChar(10)  // Will be "channel", "app", or "feature"
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  // Relations
+  decoderId Int
+  decoder   Decoder  @relation(fields: [decoderId], references: [id])
+
+  @@index([type])
+  @@index([decoderId])
+}
+
+model Company {
+  id                  Int      @id @default(autoincrement())
+  accountActivationKey String  @unique
+  name                String   @db.VarChar(100)
+  address             String   @db.VarChar(255)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  decoders            Decoder[]
+
+  @@index([accountActivationKey])
+  CommercialClient CommercialClient[]
+}
+
