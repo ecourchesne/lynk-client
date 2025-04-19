@@ -11,7 +11,6 @@ const Decoder = () => {
     const { id } = useParams<{ id: string }>()
 
     useEffect(() => {
-        console.log('id: ', id)
         if (id && decoders.find(d => d.id === id)) {
             setDecoder(decoders.find(d => d.id === id)! as Decoder)
         }

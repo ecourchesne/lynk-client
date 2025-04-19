@@ -2,8 +2,8 @@ import api from '@/api'
 import { create } from 'zustand'
 
 type UserAttributes = {
-    firstname: string
-    lastname: string
+    firstName: string
+    lastName: string
     email: string
 }
 
@@ -12,8 +12,8 @@ interface AuthStore {
     user: UserAttributes | null
     login: (email: string, password: string) => Promise<{ success: boolean; error: string | null }>
     register: (
-        firstname: string,
-        lastname: string,
+        firstName: string,
+        lastName: string,
         email: string,
         password: string,
         activationKey: string
@@ -24,12 +24,11 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>(set => ({
     logged: localStorage.getItem('logged') === 'yeah buddy',
     user: {
-        firstname: 'Étienne',
-        lastname: 'Courchesne',
+        firstName: 'Étienne',
+        lastName: 'Courchesne',
         email: 'et.courchesne@gmail.com',
     },
     login: async (email, password) => {
-        console.log('Logging in with email:', email, 'and password:', password)
         try {
             const response = await api.post('/auth/login', { email, password })
             const { user } = response.data
@@ -45,9 +44,9 @@ export const useAuthStore = create<AuthStore>(set => ({
             return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
         }
     },
-    register: async (firstname: string, lastname: string, email: string, password: string, activationKey: string) => {
+    register: async (firstName: string, lastName: string, email: string, password: string, activationKey: string) => {
         try {
-            const response = await api.post('/auth/register', { firstname, lastname, email, password, activationKey })
+            const response = await api.post('/auth/register', { firstName, lastName, email, password, activationKey })
             const { user } = response.data
             set({ logged: true, user })
             localStorage.setItem('logged', 'yeah buddy')

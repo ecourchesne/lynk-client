@@ -11,7 +11,6 @@ const Company = () => {
     const { id } = useParams<{ id: string }>()
 
     useEffect(() => {
-        console.log('id')
         if (id && companies.find(c => c.id === id)) {
             setCompany(companies.find(c => c.id === id)! as Company)
         }

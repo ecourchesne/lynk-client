@@ -3,8 +3,8 @@ declare global {
 
     type User = {
         id: string
-        firstname: string
-        lastname: string
+        firstName: string
+        lastName: string
         email: string
         password: string
         role: 'admin' | 'personal' | 'commercial'
@@ -16,13 +16,11 @@ declare global {
     }
 
     interface CommercialClient extends Client {
-        id: string
         userId: string
         companyId: string
     }
 
     interface PersonalClient extends Client {
-        id: string
         userId: string
         decoderId: string
     }

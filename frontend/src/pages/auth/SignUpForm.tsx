@@ -9,8 +9,8 @@ import StateButton from '@/components/ui/form-button'
 
 const formSchema = z
     .object({
-        firstname: z.string().min(2, { message: 'Enter a valid first name.' }),
-        lastname: z.string().min(2, { message: 'Enter a valid last name.' }),
+        firstName: z.string().min(2, { message: 'Enter a valid first name.' }),
+        lastName: z.string().min(2, { message: 'Enter a valid last name.' }),
         email: z.string().email({ message: 'Enter a valid email address.' }),
         pwd: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
         confirmPwd: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
@@ -29,8 +29,8 @@ const SignUpForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            firstname: '',
-            lastname: '',
+            firstName: '',
+            lastName: '',
             email: '',
             pwd: '',
             confirmPwd: '',
@@ -43,8 +43,8 @@ const SignUpForm = () => {
         setState('loading')
 
         const { success, error } = await register(
-            data.firstname,
-            data.lastname,
+            data.firstName,
+            data.lastName,
             data.email,
             data.pwd,
             data.activationKey
@@ -65,7 +65,7 @@ const SignUpForm = () => {
                 <div className="columns-2">
                     <FormField
                         control={form.control}
-                        name="firstname"
+                        name="firstName"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>First Name</FormLabel>
@@ -78,7 +78,7 @@ const SignUpForm = () => {
                     />
                     <FormField
                         control={form.control}
-                        name="lastname"
+                        name="lastName"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Last Name</FormLabel>
@@ -137,7 +137,7 @@ const SignUpForm = () => {
                             <FormLabel>Activation Code</FormLabel>
                             <FormDescription>A 12 digit code given to you by LYNK or your company.</FormDescription>
                             <FormControl>
-                                <Input {...field} />
+                                <Input {...field} maxLength={12} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

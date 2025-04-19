@@ -3,13 +3,19 @@ import DecryptedText from '@/components/utils/DecryptText'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-
+import { useEffect } from 'react';
+import { useClientStore } from '@/store/clientStore'
 import companies from '@/lib/companies.json'
 import individuals from '@/lib/individuals.json'
 
 const Dashboard = () => {
     const [showPrivate, setShowPrivate] = useState(false)
+    const { clients, fetchClients } = useClientStore();
 
+    useEffect(() => {
+        fetchClients(); // Récupère les clients au chargement du composant
+      }, [fetchClients]);
+    
     return (
         <div className="w-cont-sm mx-auto py-32">
             <Nav />
@@ -78,7 +84,7 @@ const Dashboard = () => {
                           >
                               <Link to={`/decoder/${u.decoderId}`} className="card flex items-center justify-between p-8">
                                   <h2 className="font-normal text-white">
-                                      {u.firstname} {u.lastname}
+                                      {u.firstName} {u.lastName}
                                   </h2>
                                   <p className="text-xs">{u.email}</p>
                               </Link>

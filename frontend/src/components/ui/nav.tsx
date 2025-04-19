@@ -8,7 +8,7 @@ const Nav = () => {
             <span className="font-montech text-sm text-white tracking-widest lighted">LYNK</span>
 
             <span className="font-montech text-sm text-white tracking-widest">
-                {user?.firstname.substring(0, 1)}.{user?.lastname.substring(0, 1)}.
+                {user?.firstName.substring(0, 1)}.{user?.lastName.substring(0, 1)}.
             </span>
         </div>
     )
