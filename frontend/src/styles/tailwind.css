@@ -10,7 +10,9 @@
     --color-white-85: rgba(240, 237, 236, 0.8);
     --color-white-60: rgba(240, 237, 236, 0.6);
     --color-white-40: rgba(240, 237, 236, 0.4);
+    --color-white-20: rgba(240, 237, 236, 0.2);
     --color-white-07: rgba(240, 237, 236, 0.1);
+    --color-white-06: rgba(240, 237, 236, 0.08);
     --color-white-04: rgba(240, 237, 236, 0.06);
 
     --font-montech: var(--montech);

@@ -3,10 +3,12 @@
     --hsl-black: 240, 10%, 4%;
 
     --white: #f0edec;
-    --hsl-white: 15, 12%, 93%;
+    --hsl-white: 15 12% 93%;
     --white-60: rgba(240, 237, 236, 0.6);
     --white-40: rgba(240, 237, 236, 0.4);
+    --white-20: rgba(240, 237, 236, 0.2);
     --white-07: rgba(240, 237, 236, 0.07);
+    --white-06: rgba(240, 237, 236, 0.06);
     --white-04: rgba(240, 237, 236, 0.04);
 
     --radius: 4px;

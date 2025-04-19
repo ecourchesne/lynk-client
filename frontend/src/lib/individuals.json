@@ -1,0 +1,26 @@
+[
+    {
+        "firstname": "Étienne",
+        "lastname": "Courchesne",
+        "email": "et.courchesne@gmail.com",
+        "decoderId": "1234567890"
+    },
+    {
+        "firstname": "Mathieu",
+        "lastname": "Mongrain",
+        "email": "mmmaliments@mm.com",
+        "decoderId": "0987654321"
+    },
+    {
+        "firstname": "William",
+        "lastname": "Boudreau",
+        "email": "xeudodev@jackpot.ca",
+        "decoderId": "1122334455"
+    },
+    {
+        "firstname": "William",
+        "lastname": "Flageol",
+        "email": "boooomboclaaat@uqtr.ca",
+        "decoderId": "6677889900"
+    }
+]
