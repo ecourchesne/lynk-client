@@ -1,18 +1,18 @@
 import DecryptedText from '@/components/utils/DecryptText'
-import { Link, replace, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import LoginForm from './LoginForm'
 import SignUpForm from './SignUpForm'
 import { useAuthStore } from '@/store/authStore'
-import { useLayoutEffect } from 'react'
+import { useEffect } from 'react'
 
 const Auth = () => {
     const navigate = useNavigate()
 
-    const isLogged = useAuthStore(state => state.token)
+    const isLogged = useAuthStore(state => state.logged)
 
     const l = useLocation()
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (isLogged) {
             navigate('/dashboard', { replace: true })
         }

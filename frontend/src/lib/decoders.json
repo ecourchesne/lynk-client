@@ -1,0 +1,240 @@
+[
+    {
+        "id": "dksk92ldows-skj2o0l2s1",
+        "name": "Room 101",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s2",
+        "name": "Room 102",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s3",
+        "name": "Room 103",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s4",
+        "name": "Room 104",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s5",
+        "name": "Room 105",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s6",
+        "name": "Room 106",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s7",
+        "name": "Room 107",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s8",
+        "name": "Room 108",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s9",
+        "name": "Room 109",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s10",
+        "name": "Room 110",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s11",
+        "name": "Room 201",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s12",
+        "name": "Room 202",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s12",
+        "name": "Room 203",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s14",
+        "name": "Room 204",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s15",
+        "name": "Room 205",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s16",
+        "name": "Room 301",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s17",
+        "name": "Room 302",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s18",
+        "name": "Room 303",
+        "model": "BM-1008",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s19",
+        "name": "Room 401",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s20",
+        "name": "Room 402",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "dksk92ldows-skj2o0l2s21",
+        "name": "Room 403",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "1234567890",
+        "name": "Étienne's Decoder",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": []
+    },
+    {
+        "id": "0987654321",
+        "name": "Mathieu's Decoder",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": [
+            {
+                "id": "1234567890",
+                "type": "channel",
+                "name": "Netflix"
+            },
+            {
+                "id": "0987654321",
+                "type": "channel",
+                "name": "Disney+"
+            },
+            {
+                "id": "6677889900",
+                "type": "channel",
+                "name": "HBO Max"
+            },
+            {
+                "id": "1122334455",
+                "type": "channel",
+                "name": "Amazon Prime Video"
+            }
+        ]
+    },
+    {
+        "id": "1122334455",
+        "name": "William's Decoder",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": [
+            {
+                "id": "1234567890",
+                "type": "channel",
+                "name": "Netflix"
+            },
+            {
+                "id": "0987654321",
+                "type": "channel",
+                "name": "Disney+"
+            },
+            {
+                "id": "6677889900",
+                "type": "channel",
+                "name": "HBO Max"
+            },
+            {
+                "id": "1122334455",
+                "type": "channel",
+                "name": "Amazon Prime Video"
+            }
+        ]
+    },
+    {
+        "id": "6677889900",
+        "name": "Matthew's Decoder",
+        "model": "WH-2400",
+        "state": "active",
+        "subscriptions": [
+            {
+                "id": "1122334455",
+                "type": "channel",
+                "name": "Netflix"
+            },
+            {
+                "id": "6677889900",
+                "type": "channel",
+                "name": "Disney+"
+            },
+            {
+                "id": "1234567890",
+                "type": "channel",
+                "name": "HBO Max"
+            },
+            {
+                "id": "0987654321",
+                "type": "channel",
+                "name": "Amazon Prime Video"
+            }
+        ]
+    }
+]

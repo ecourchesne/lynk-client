@@ -4,10 +4,10 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
+import { UserCreationDto } from "./dto/user.creation.dto";
 
 @Injectable()
 export class AuthService {
-
   private readonly jwtSecret = "supersecretkey";
 
   public constructor(private prismaService: PrismaService) {}
@@ -36,28 +36,65 @@ export class AuthService {
     return jwt.sign({ userId }, this.jwtSecret, { expiresIn: "8h" });
   }
 
-  public async register(userDto: User): Promise<{ token: string }> {
+  public async register(userDto: UserCreationDto): Promise<User> {
     const hashedPassword = await this.hashPassword(userDto.password);
-    const user = await this.prismaService.user.create({
-      data: {
-        password: hashedPassword,
-        firstName: userDto.firstName.toLocaleLowerCase(),
-        lastName: userDto.lastName.toLocaleLowerCase(),
-        email: userDto.email.toLocaleLowerCase(),
-        role: userDto.role.toLocaleLowerCase(),
-      },
-    });
-    const token = await this.generateToken(user.id);
-    return { token };
+
+    const data = {
+      password: hashedPassword,
+      firstName: userDto.firstName.toLowerCase(),
+      lastName: userDto.lastName.toLowerCase(),
+      email: userDto.email.toLowerCase(),
+      role: "admin",
+    };
+    if (userDto.activationKey) data.role = "user";
+
+    const user = await this.prismaService.user.create({ data });
+
+    if (!userDto.activationKey) return user;
+    
+    // Extract prefix and ID from activationKey
+    const activationKey = userDto.activationKey.toString();
+    const prefix = activationKey.charAt(0);
+    const id = parseInt(activationKey.slice(1), 10);
+    if (prefix == "1") {
+      // Create a personal client
+      await this.prismaService.client.create({
+        data: {
+          userId: user.id,
+          type: "personnal",
+          personal: {
+            create: {
+              decoderId: id,
+            },
+          },
+        },
+      });
+    } else if (prefix == "2") {
+      // Create a commercial client
+      await this.prismaService.client.create({
+        data: {
+          userId: user.id,
+          type: "commercial",
+          commercial: {
+            create: {
+              companyId: id,
+            },
+          },
+        },
+      });
+    } else {
+      throw new Error("Invalid activation key prefix");
+    }
+
+    return user;
   }
 
-  public async login(email: string, password: string): Promise<{ token: string }> {
+  public async login(email: string, password: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({ where: { email } });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException("Invalid credentials");
     }
-    const token = await this.generateToken(user.id);
-    return { token };
+    return user;
   }
 
   public async validateToken(token: string): Promise<void> {

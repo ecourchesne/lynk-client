@@ -2,39 +2,67 @@ import api from '@/api'
 import { create } from 'zustand'
 
 type UserAttributes = {
-    firstname: string
-    lastname: string
+    firstName: string
+    lastName: string
     email: string
+    role: string
 }
 
 interface AuthStore {
-    token: string | null
+    logged: boolean
     user: UserAttributes | null
     login: (email: string, password: string) => Promise<{ success: boolean; error: string | null }>
+    register: (
+        firstName: string,
+        lastName: string,
+        email: string,
+        password: string,
+        activationKey: string
+    ) => Promise<{ success: boolean; error: string | null }>
     logout: () => void
 }
 
 export const useAuthStore = create<AuthStore>(set => ({
-    token: null,
-    user: null,
+    logged: localStorage.getItem('logged') === 'yeah buddy',
+    user: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: '',
+    },
     login: async (email, password) => {
         try {
             const response = await api.post('/auth/login', { email, password })
-            const { token, user } = response.data
+            const { firstName, lastName, email: _email, role } = response.data
 
-            set({ user, token })
-            localStorage.setItem('token', token) // Persist token
-            api.defaults.headers.Authorization = `Bearer ${token}`
+            set({ logged: true, user: { firstName, lastName, email: _email, role } })
+            localStorage.setItem('logged', 'yeah buddy')
 
             return { success: true, error: null }
         } catch (error) {
+            set({ logged: false, user: null })
+            localStorage.removeItem('logged')
             console.error('Login failed:', error)
             return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
         }
     },
+    register: async (firstName: string, lastName: string, email: string, password: string, activationKey: string) => {
+        try {
+            const response = await api.post('/auth/register', { firstName, lastName, email, password, activationKey })
+            const { user } = response.data
+            set({ logged: true, user })
+            localStorage.setItem('logged', 'yeah buddy')
+            return { success: true, error: null }
+        } catch (error) {
+            set({ logged: false, user: null })
+            localStorage.removeItem('logged')
+            console.error('Registration failed:', error)
+            return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
+        }
+    },
     logout: () => {
-        set({ user: null, token: null })
-        localStorage.removeItem('token')
+        set({ logged: false, user: null })
+        localStorage.removeItem('logged')
         delete api.defaults.headers.Authorization
     },
 }))
