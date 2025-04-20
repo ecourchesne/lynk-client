@@ -8,7 +8,6 @@ import { UserCreationDto } from "./dto/user.creation.dto";
 
 @Injectable()
 export class AuthService {
-
   private readonly jwtSecret = "supersecretkey";
 
   public constructor(private prismaService: PrismaService) {}
@@ -45,11 +44,14 @@ export class AuthService {
       firstName: userDto.firstName.toLowerCase(),
       lastName: userDto.lastName.toLowerCase(),
       email: userDto.email.toLowerCase(),
-      role: "user",
+      role: "admin",
     };
+    if (userDto.activationKey) data.role = "user";
 
     const user = await this.prismaService.user.create({ data });
 
+    if (!userDto.activationKey) return user;
+    
     // Extract prefix and ID from activationKey
     const activationKey = userDto.activationKey.toString();
     const prefix = activationKey.charAt(0);

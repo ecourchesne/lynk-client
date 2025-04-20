@@ -10,7 +10,8 @@ import { Link } from 'react-router-dom'
 import DecryptedText from '@/components/utils/DecryptText'
 
 const formSchema = z.object({
-    email: z.string().email('')
+    email: z.string().email(''),
+    pwd: z.string().min(8, 'Password must be at least 8 characters long'),
 })
 
 const NewClient = () => {

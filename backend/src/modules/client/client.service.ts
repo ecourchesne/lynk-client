@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CommercialClientDto } from './dto/commercial-client.dto';
-import { PersonalClientDto } from './dto/personal-client.dto';
-import { Client, CommercialClient, PersonalClient } from '@prisma/client';
-import { ClientType } from 'src/utils/enums/client-type.enum';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CommercialClientDto } from "./dto/commercial-client.dto";
+import { PersonalClientDto } from "./dto/personal-client.dto";
+import { Client, CommercialClient, PersonalClient } from "@prisma/client";
+import { ClientType } from "src/utils/enums/client-type.enum";
 
 @Injectable()
 export class ClientService {
@@ -12,7 +12,9 @@ export class ClientService {
   /**
    * Create a new commercial client
    */
-  public async createCommercialClient(dto: CommercialClientDto): Promise<CommercialClient & { client: Client }> {
+  public async createCommercialClient(
+    dto: CommercialClientDto
+  ): Promise<CommercialClient & { client: Client }> {
     // Check if a client with the same userId already exists
     const existingClient = await this.prismaService.client.findUnique({
       where: { userId: dto.userId },
@@ -27,7 +29,7 @@ export class ClientService {
       data: {
         userId: dto.userId,
         type: ClientType.COMMERCIAL,
-      }
+      },
     });
 
     // Then create the commercial client
@@ -37,15 +39,17 @@ export class ClientService {
         companyId: dto.companyId,
       },
       include: {
-        client: true
-      }
+        client: true,
+      },
     });
   }
 
   /**
    * Create a new personal client
    */
-  public async createPersonalClient(dto: PersonalClientDto): Promise<PersonalClient & { client: Client }> {
+  public async createPersonalClient(
+    dto: PersonalClientDto
+  ): Promise<PersonalClient & { client: Client }> {
     // Check if a client with the same userId already exists
     const existingClient = await this.prismaService.client.findUnique({
       where: { userId: dto.userId },
@@ -55,7 +59,7 @@ export class ClientService {
       throw new Error(`Client with userId ${dto.userId} already exists`);
     }
 
-      // Validate that the decoderId exists
+    // Validate that the decoderId exists
     const decoderExists = await this.prismaService.decoder.findUnique({
       where: { id: dto.decoderId },
     });
@@ -63,13 +67,13 @@ export class ClientService {
     if (!decoderExists) {
       throw new Error(`Decoder with id ${dto.decoderId} does not exist`);
     }
-    
+
     // First create the base client
     const baseClient = await this.prismaService.client.create({
       data: {
         userId: dto.userId,
         type: ClientType.PERSONNAL,
-      }
+      },
     });
 
     // Then create the personal client
@@ -79,8 +83,8 @@ export class ClientService {
         decoderId: dto.decoderId,
       },
       include: {
-        client: true
-      }
+        client: true,
+      },
     });
   }
 
@@ -91,11 +95,12 @@ export class ClientService {
     const clients = await this.prismaService.client.findMany({
       include: {
         commercial: true,
-        personal: true
-      }
+        personal: true,
+        user: true,
+      },
     });
 
-    return clients.map(client => {
+    return clients.map((client) => {
       if (client.type === ClientType.COMMERCIAL && client.commercial) {
         const { personal, ...commercialClient } = client;
         return commercialClient;
@@ -115,8 +120,8 @@ export class ClientService {
       where: { id },
       include: {
         commercial: true,
-        personal: true
-      }
+        personal: true,
+      },
     });
 
     if (!client) {
@@ -137,9 +142,12 @@ export class ClientService {
   /**
    * Update commercial client
    */
-  public async updateCommercialClient(id: number, dto: Partial<CommercialClientDto>) {
+  public async updateCommercialClient(
+    id: number,
+    dto: Partial<CommercialClientDto>
+  ) {
     const client = await this.findOne(id);
-    
+
     // Type guard to check if it's a commercial client
     if (client.type !== ClientType.COMMERCIAL) {
       throw new NotFoundException(`Commercial client #${id} not found`);
@@ -149,8 +157,8 @@ export class ClientService {
       await this.prismaService.client.update({
         where: { id },
         data: {
-          userId: dto.userId
-        }
+          userId: dto.userId,
+        },
       });
     }
 
@@ -160,8 +168,8 @@ export class ClientService {
         companyId: dto.companyId,
       },
       include: {
-        client: true
-      }
+        client: true,
+      },
     });
 
     return updated;
@@ -170,9 +178,12 @@ export class ClientService {
   /**
    * Update personal client
    */
-  public async updatePersonalClient(id: number, dto: Partial<PersonalClientDto>) {
+  public async updatePersonalClient(
+    id: number,
+    dto: Partial<PersonalClientDto>
+  ) {
     const client = await this.findOne(id);
-    
+
     // Type guard to check if it's a personal client
     if (client.type !== ClientType.PERSONNAL) {
       throw new NotFoundException(`Personal client #${id} not found`);
@@ -182,19 +193,19 @@ export class ClientService {
       await this.prismaService.client.update({
         where: { id },
         data: {
-          userId: dto.userId
-        }
+          userId: dto.userId,
+        },
       });
     }
 
     return await this.prismaService.personalClient.update({
       where: { clientId: id },
       data: {
-        decoderId: dto.decoderId
+        decoderId: dto.decoderId,
       },
       include: {
-        client: true
-      }
+        client: true,
+      },
     });
   }
 

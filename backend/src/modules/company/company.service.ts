@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Company } from '@prisma/client';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { Company } from "@prisma/client";
+import { CreateCompanyDto } from "./dto/create-company.dto";
+import { UpdateCompanyDto } from "./dto/update-company.dto";
 
 @Injectable()
 export class CompanyService {
@@ -21,7 +21,7 @@ export class CompanyService {
   }
 
   async getAllCompanies(): Promise<Company[]> {
-    return this.prismaService.company.findMany();
+    return this.prismaService.company.findMany({ include: { decoders: true } });
   }
 
   async updateCompany(id: number, data: UpdateCompanyDto): Promise<Company> {

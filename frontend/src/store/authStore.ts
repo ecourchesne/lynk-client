@@ -5,6 +5,7 @@ type UserAttributes = {
     firstName: string
     lastName: string
     email: string
+    role: string
 }
 
 interface AuthStore {
@@ -24,16 +25,17 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>(set => ({
     logged: localStorage.getItem('logged') === 'yeah buddy',
     user: {
-        firstName: 'Étienne',
-        lastName: 'Courchesne',
-        email: 'et.courchesne@gmail.com',
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: '',
     },
     login: async (email, password) => {
         try {
             const response = await api.post('/auth/login', { email, password })
-            const { user } = response.data
+            const { firstName, lastName, email: _email, role } = response.data
 
-            set({ logged: true, user })
+            set({ logged: true, user: { firstName, lastName, email: _email, role } })
             localStorage.setItem('logged', 'yeah buddy')
 
             return { success: true, error: null }
