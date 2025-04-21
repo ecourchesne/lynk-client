@@ -31,7 +31,7 @@ const Company = () => {
 
             {/* Back to dashboard */}
             <Link
-                to="/dashboard"
+                to="/"
                 className="block mt-8 mb-12 font-poppins text-sm text-white-60 hover:text-white duration-200 ease-in-out font-normal"
             >
                 <span className="mr-2">{'<'}</span> Dashboard

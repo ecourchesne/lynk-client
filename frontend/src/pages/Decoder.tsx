@@ -1,7 +1,7 @@
 import Nav from '@/components/ui/nav'
 import DecryptedText from '@/components/utils/DecryptText'
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 import { useDecoderStore } from '@/store/decoderStore'
@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/authStore'
 
 const Decoder = () => {
     const { id } = useParams<{ id: string }>()
+    const navigate = useNavigate()
 
     const { user } = useAuthStore()
     const { decoder, getDecoderById } = useDecoderStore()
@@ -39,12 +40,12 @@ const Decoder = () => {
             <Nav />
 
             {/* Back to dashboard */}
-            <Link
-                to="/dashboard"
+            <button
+                onClick={() => navigate(-1)}
                 className="block mt-8 mb-12 font-poppins text-sm text-white-60 hover:text-white duration-200 ease-in-out font-normal"
             >
                 <span className="mr-2">{'<'}</span> Dashboard
-            </Link>
+            </button>
 
             {/* header */}
             <h1>

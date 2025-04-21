@@ -14,7 +14,7 @@ const Auth = () => {
 
     useEffect(() => {
         if (isLogged) {
-            navigate('/dashboard', { replace: true })
+            navigate('/', { replace: true })
         }
     }, [isLogged])
 
@@ -37,14 +37,14 @@ const Auth = () => {
             {l.pathname.includes('sign-up') ? (
                 <p className="w-cont-sm">
                     Already have an account?{' '}
-                    <Link to="/" className="simple-link">
+                    <Link to="/auth" className="simple-link">
                         Log In
                     </Link>
                 </p>
             ) : (
                 <p className="w-cont-sm">
                     New client?{' '}
-                    <Link to="/sign-up" className="simple-link">
+                    <Link to="/auth/sign-up" className="simple-link">
                         Sign Up
                     </Link>
                 </p>
