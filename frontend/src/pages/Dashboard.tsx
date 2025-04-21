@@ -22,7 +22,7 @@ const Dashboard = () => {
     
     useEffect(() => {
         if (logged === false) {
-            navigate('/', { replace: true })
+            navigate('/auth', { replace: true })
         }
     }, [logged, navigate])
     

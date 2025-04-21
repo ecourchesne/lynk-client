@@ -9,7 +9,7 @@ const Nav = () => {
 
     const handleLogout = () => {
         logout()
-        navigate('/')
+        navigate('/auth')
     }
 
     return (
