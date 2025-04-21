@@ -24,19 +24,23 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>(set => ({
     logged: localStorage.getItem('logged') === 'yeah buddy',
-    user: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        role: '',
-    },
+    user: localStorage.getItem('user')
+        ? JSON.parse(localStorage.getItem('user') || '')
+        : {
+              firstName: '',
+              lastName: '',
+              email: '',
+              role: '',
+          },
     login: async (email, password) => {
         try {
             const response = await api.post('/auth/login', { email, password })
             const { firstName, lastName, email: _email, role } = response.data
+            console.log('Login response:', response.data)
 
             set({ logged: true, user: { firstName, lastName, email: _email, role } })
             localStorage.setItem('logged', 'yeah buddy')
+            localStorage.setItem('user', JSON.stringify({ firstName, lastName, email: _email, role }))
 
             return { success: true, error: null }
         } catch (error) {
@@ -49,13 +53,16 @@ export const useAuthStore = create<AuthStore>(set => ({
     register: async (firstName: string, lastName: string, email: string, password: string, activationKey: string) => {
         try {
             const response = await api.post('/auth/register', { firstName, lastName, email, password, activationKey })
-            const { user } = response.data
-            set({ logged: true, user })
+            const { firstName: fn, lastName: ln, email: _email, role } = response.data
+
+            set({ logged: true, user: { firstName: fn, lastName: ln, email: _email, role } })
             localStorage.setItem('logged', 'yeah buddy')
+            localStorage.setItem('user', JSON.stringify({ firstName: fn, lastName: ln, email: _email, role }))
             return { success: true, error: null }
         } catch (error) {
             set({ logged: false, user: null })
             localStorage.removeItem('logged')
+            localStorage.removeItem('user')
             console.error('Registration failed:', error)
             return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
         }
@@ -63,6 +70,6 @@ export const useAuthStore = create<AuthStore>(set => ({
     logout: () => {
         set({ logged: false, user: null })
         localStorage.removeItem('logged')
-        delete api.defaults.headers.Authorization
+        localStorage.removeItem('user')
     },
 }))

@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Decoder } from '@prisma/client';
-import { CreateDecoderDto } from './dto/create-decoder.dto';
-import { UpdateDecoderDto } from './dto/update-decoder.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { Decoder } from "@prisma/client";
+import { CreateDecoderDto } from "./dto/create-decoder.dto";
+import { UpdateDecoderDto } from "./dto/update-decoder.dto";
 
 @Injectable()
 export class DecoderService {
@@ -17,6 +17,9 @@ export class DecoderService {
   async getDecoder(id: number): Promise<Decoder | null> {
     return this.prismaService.decoder.findUnique({
       where: { id },
+      include: {
+        subscriptions: true,
+      },
     });
   }
 

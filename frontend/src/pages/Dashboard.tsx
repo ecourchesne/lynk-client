@@ -1,20 +1,30 @@
 import Nav from '@/components/ui/nav'
 import DecryptedText from '@/components/utils/DecryptText'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useLayoutEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect } from 'react';
 import { useClientStore } from '@/store/clientStore'
 import companies from '@/lib/companies.json'
-import individuals from '@/lib/individuals.json'
+import { useAuthStore } from '@/store/authStore'
 
 const Dashboard = () => {
-    const [showPrivate, setShowPrivate] = useState(false)
+    const navigate = useNavigate()
+    
+    const { logged } = useAuthStore();
     const { clients, fetchClients } = useClientStore();
+    
+    const [showPrivate, setShowPrivate] = useState(false)
 
     useEffect(() => {
         fetchClients(); // Récupère les clients au chargement du composant
-      }, [fetchClients]);
+    }, [fetchClients]);
+    
+    useEffect(() => {
+        if (logged === false) {
+            navigate('/', { replace: true })
+        }
+    }, [logged, navigate])
     
     return (
         <div className="w-cont-sm mx-auto py-32">
@@ -71,7 +81,7 @@ const Dashboard = () => {
             {/* decoder list */}
             <ul className="flex flex-col gap-3 mt-8">
                 {showPrivate
-                    ? individuals.map((u, i) => (
+                    ? clients.map((c, i) => (
                           <motion.li
                               initial={{ opacity: 0, y: '100%' }}
                               animate={{
@@ -80,13 +90,13 @@ const Dashboard = () => {
                                   transition: { duration: 0.85, ease: 'circInOut', delay: i * 0.1 },
                               }}
                               className="w-full"
-                              key={u.email}
+                              key={c.id}
                           >
-                              <Link to={`/decoder/${u.decoderId}`} className="card flex items-center justify-between p-8">
+                              <Link to={`/decoder/${c.personal.decoderId}`} className="card flex items-center justify-between p-8">
                                   <h2 className="font-normal text-white">
-                                      {u.firstName} {u.lastName}
+                                      {c.user.firstName} {c.user.lastName}
                                   </h2>
-                                  <p className="text-xs">{u.email}</p>
+                                  <p className="text-xs">{c.user.email}</p>
                               </Link>
                           </motion.li>
                       ))
