@@ -4,10 +4,11 @@ import { useAuthStore } from './store/authStore'
 import { useEffect } from 'react'
 
 const App = () => {
-    const { logged } = useAuthStore()
+    const { logged, user } = useAuthStore()
 
     useEffect(() => {
         console.log('Logged: ', logged)
+        console.log('User: ', user)
     }, [logged])
 
     return (

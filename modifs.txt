@@ -1,0 +1,9 @@
+Modifs à faire pour que le stock marche
+
+1. Ajouter un "name" aux decoders (ex: "Room 102", "Room 103", etc.)
+
+2. Ajouter "subscriptions" aux decoders 
+    (une autre tables dans laquelle on rentrera des affaires comme bell media, canal D, netflix) 
+    (voir le modèle dans front/src/lib/types.ts)
+
+3. 

@@ -4,17 +4,26 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-import decoders from '@/lib/decoders.json'
+import { useDecoderStore } from '@/store/decoderStore'
+import { useAuthStore } from '@/store/authStore'
 
 const Decoder = () => {
-    const [decoder, setDecoder] = useState<Decoder | null>(null)
     const { id } = useParams<{ id: string }>()
 
+    const { user } = useAuthStore()
+    const { decoder, getDecoderById } = useDecoderStore()
+
+    const [fakeStatus, setFakeStatus] = useState('connecting')
+
     useEffect(() => {
-        if (id && decoders.find(d => d.id === id)) {
-            setDecoder(decoders.find(d => d.id === id)! as Decoder)
+        if (id) getDecoderById(id)
+
+        const timeout = setTimeout(() => setFakeStatus('active'), 2750)
+
+        return () => {
+            clearTimeout(timeout)
         }
-    }, [id])
+    }, [id, getDecoderById])
 
     if (!decoder) {
         return (
@@ -39,16 +48,32 @@ const Decoder = () => {
 
             {/* header */}
             <h1>
-                <DecryptedText text={decoder.name} animateOn="view" sequential />
+                <DecryptedText text={decoder?.name || decoder.model} animateOn="view" sequential />
             </h1>
 
-            <h2 className="text-lg font-normal text-white mt-8 mb-4">Details</h2>
-            <div className="flex gap-2">
-                <div className="card w-max h-10 text-white text-xs px-4 flex items-center justify-center">
-                    {/* {decoder.accountActivationKey} */}cscsdcsdc
-                </div>
-                {/* <CopyButton value={decoder.accountActivationKey} /> */}
-            </div>
+            {/* status */}
+            <h2
+                className={`text-lg font-normal mt-8 mb-4 flex items-center gap-2
+                            ${
+                                fakeStatus === 'active'
+                                    ? 'text-green-400'
+                                    : fakeStatus === 'down'
+                                    ? 'text-red-400'
+                                    : 'text-amber-300 animate-pulse duration-[1.5s]'
+                            }`}
+            >
+                <span
+                    className={`w-2 h-2 rounded-full 
+                                ${
+                                    fakeStatus === 'active'
+                                        ? 'bg-green-400'
+                                        : fakeStatus === 'down'
+                                        ? 'bg-red-400'
+                                        : 'bg-amber-300'
+                                }`}
+                />
+                {fakeStatus === 'active' ? 'Active' : fakeStatus === 'down' ? 'Down' : 'Connecting'}
+            </h2>
 
             {/* subscription list */}
             <div className="flex items-center justify-between mt-8 mb-6">
@@ -61,9 +86,7 @@ const Decoder = () => {
                 </Link>
             </div>
             <ul className="flex flex-col gap-3">
-                {decoder.subscriptions.length === 0 ? (
-                    <p className="uppercase text-sm tracking-widest font-montech">No Subscriptions</p>
-                ) : (
+                {decoder?.subscriptions?.length > 1 ? (
                     decoder.subscriptions.map((s, i) => (
                         <motion.li
                             initial={{ opacity: 0, y: '100%' }}
@@ -80,6 +103,8 @@ const Decoder = () => {
                             </div>
                         </motion.li>
                     ))
+                ) : (
+                    <p className="uppercase text-sm tracking-widest font-montech">No Subscriptions</p>
                 )}
             </ul>
         </div>
