@@ -27,7 +27,6 @@ declare global {
 
     type Company = {
         id: string
-        accountActivationKey: string
         name: string
         address: string
         decoders: Decoder[]

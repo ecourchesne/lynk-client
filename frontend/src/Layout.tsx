@@ -7,8 +7,6 @@ const App = () => {
     const { logged, user } = useAuthStore()
 
     useEffect(() => {
-        console.log('Logged: ', logged)
-        console.log('User: ', user)
     }, [logged])
 
     return (

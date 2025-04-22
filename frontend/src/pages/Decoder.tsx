@@ -87,8 +87,9 @@ const Decoder = () => {
                 </Link>
             </div>
             <ul className="flex flex-col gap-3">
-                {decoder?.subscriptions?.length > 1 ? (
+                {decoder?.subscriptions?.length > 0 ? (
                     decoder.subscriptions.map((s, i) => (
+                        console.log(s),
                         <motion.li
                             initial={{ opacity: 0, y: '100%' }}
                             animate={{

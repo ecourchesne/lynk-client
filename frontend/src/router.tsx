@@ -5,7 +5,7 @@ import NotFound from './pages/FourOFour'
 import Company from './pages/Company'
 import Decoder from './pages/Decoder'
 import NewClient from './pages/NewClient'
-import Home from './pages/home'
+import Home from './pages/Home'
 
 export const router = createBrowserRouter([
     {

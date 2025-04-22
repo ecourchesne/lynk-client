@@ -4,5 +4,4 @@
 export enum ChannelType{
     CHANNEL, 
     APP,
-    FEATURE
 }

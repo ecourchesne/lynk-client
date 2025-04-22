@@ -16,9 +16,9 @@ datasource db {
 model User {
   id        Int     @id @default(autoincrement())
   email     String  @unique @db.VarChar(50)
-  firstName String  @db.VarChar(30)
-  lastName  String  @db.VarChar(30)
-  password  String  @db.VarChar(128)
+  firstName String?  @db.VarChar(30)
+  lastName  String? @db.VarChar(30)
+  password  String?  @db.VarChar(128)
   role      String  @db.VarChar(30)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -58,29 +58,31 @@ model CommercialClient {
   @@index([clientId])
   @@index([companyId])
 }
-
 model PersonalClient {
   clientId  Int      @id
-  decoderId Int   @unique  // Make unique for one-to-one relation
+  decoderId Int? @unique // Make it optional for delayed assignment and ensure uniqueness
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   // Relations
   client    Client   @relation(fields: [clientId], references: [id])
-  decoder   Decoder  @relation(fields: [decoderId], references: [id])
+  decoder   Decoder? @relation(fields: [decoderId], references: [id])
 
   @@index([decoderId])
 }
 
 model Decoder {
   id        Int     @id @default(autoincrement())
+  name      String?   @db.VarChar(100)
   model         String   @db.VarChar(100)
   state         String   @db.VarChar(10)  // Will be either "active" or "inactive"
+  lastRestartedAt DateTime? 
+  lastReinitializedAt DateTime? 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   // Relations
-  subscriptions SubscriptionItem[]
+  subscriptions SubscriptionItem[] @relation("DecoderSubscriptions") // Many-to-many relationship
   personalClient PersonalClient?  // One-to-one relation with PersonalClient
   companyId     Int?
   company       Company? @relation(fields: [companyId], references: [id])
@@ -90,14 +92,14 @@ model Decoder {
 
 model SubscriptionItem {
   id        Int     @id @default(autoincrement())
-  type      String   @db.VarChar(10)  // Will be "channel", "app", or "feature"
+  type      String   @db.VarChar(10)  // Will be "channel", "app"
   name      String   @db.VarChar(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   // Relations
   decoderId Int
-  decoder   Decoder  @relation(fields: [decoderId], references: [id])
+  decoders  Decoder[]         @relation("DecoderSubscriptions") // Many-to-many relationship
 
   @@index([type])
   @@index([decoderId])
@@ -105,7 +107,6 @@ model SubscriptionItem {
 
 model Company {
   id                  Int      @id @default(autoincrement())
-  accountActivationKey String  @unique
   name                String   @db.VarChar(100)
   address             String   @db.VarChar(255)
   createdAt           DateTime @default(now())
@@ -114,7 +115,6 @@ model Company {
   // Relations
   decoders            Decoder[]
 
-  @@index([accountActivationKey])
   CommercialClient CommercialClient[]
 }
 

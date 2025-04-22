@@ -36,7 +36,6 @@ export const useAuthStore = create<AuthStore>(set => ({
         try {
             const response = await api.post('/auth/login', { email, password })
             const { firstName, lastName, email: _email, role } = response.data
-            console.log('Login response:', response.data)
 
             set({ logged: true, user: { firstName, lastName, email: _email, role } })
             localStorage.setItem('logged', 'yeah buddy')
@@ -64,6 +63,16 @@ export const useAuthStore = create<AuthStore>(set => ({
             localStorage.removeItem('logged')
             localStorage.removeItem('user')
             console.error('Registration failed:', error)
+            return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
+        }
+    },
+    addClient: async ( email: string, companyId?: string, decoderId?: string ) => {
+        try {
+            //const response = await api.post('/clients/add', identifier)
+           // console.log('Client added successfully:', response.data)
+            return { success: true, error: null }
+        } catch (error) {
+            console.error('Adding client failed:', error)
             return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
         }
     },

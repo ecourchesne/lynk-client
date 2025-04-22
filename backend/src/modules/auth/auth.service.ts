@@ -89,12 +89,27 @@ export class AuthService {
     return user;
   }
 
-  public async login(email: string, password: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { email } });
+  public async login(email: string, password: string): Promise<User & { companyId: number | null; decoderId: number | null }> {
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+      include: {
+        client: {
+          include: {
+            commercial: true,
+            personal: true,
+          },
+        },
+      },
+    });
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException("Invalid credentials");
     }
-    return user;
+
+    const companyId = user.client?.commercial?.companyId || null;
+    const decoderId = user.client?.personal?.decoderId || null;
+
+    return { ...user, companyId, decoderId };
   }
 
   public async validateToken(token: string): Promise<void> {

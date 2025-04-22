@@ -45,9 +45,9 @@ const Company = () => {
             <h2 className="text-lg font-normal text-white mt-8 mb-4">Activation Key</h2>
             <div className="flex gap-2">
                 <div className="card w-max h-10 text-white text-xs px-4 flex items-center justify-center">
-                    {company.accountActivationKey}
+                    {"111111"}
                 </div>
-                <CopyButton value={company.accountActivationKey} />
+                <CopyButton value={"111111"} />
             </div>
 
             {/* decoder list */}

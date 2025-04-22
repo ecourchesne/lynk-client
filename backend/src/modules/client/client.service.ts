@@ -15,19 +15,28 @@ export class ClientService {
   public async createCommercialClient(
     dto: CommercialClientDto
   ): Promise<CommercialClient & { client: Client }> {
-    // Check if a client with the same userId already exists
-    const existingClient = await this.prismaService.client.findUnique({
-      where: { userId: dto.userId },
+    // Check if a user with the same email already exists
+    const existingClient = await this.prismaService.user.findUnique({
+      where: { email: dto.email},
     });
 
+
     if (existingClient) {
-      throw new Error(`Client with userId ${dto.userId} already exists`);
+      throw new Error(`Client with email ${dto.email} already exists`);
     }
+
+    // First create the base user
+
+    const baseUser = await this.prismaService.user.create({
+      data: {
+        email: dto.email,
+        role: "user",
+    }});
 
     // First create the base client
     const baseClient = await this.prismaService.client.create({
       data: {
-        userId: dto.userId,
+        userId: baseUser.id,
         type: ClientType.COMMERCIAL,
       },
     });
@@ -50,13 +59,13 @@ export class ClientService {
   public async createPersonalClient(
     dto: PersonalClientDto
   ): Promise<PersonalClient & { client: Client }> {
-    // Check if a client with the same userId already exists
-    const existingClient = await this.prismaService.client.findUnique({
-      where: { userId: dto.userId },
+    // Check if a user with the same email already exists
+    const existingClient = await this.prismaService.user.findUnique({
+      where: { email: dto.email},
     });
 
     if (existingClient) {
-      throw new Error(`Client with userId ${dto.userId} already exists`);
+      throw new Error(`Client with email ${dto.email} already exists`);
     }
 
     // Validate that the decoderId exists
@@ -68,10 +77,17 @@ export class ClientService {
       throw new Error(`Decoder with id ${dto.decoderId} does not exist`);
     }
 
-    // First create the base client
+    // First create the base user
+
+    const baseUser = await this.prismaService.user.create({
+      data: {
+        email: dto.email,
+        role: "user",
+    }});
+
     const baseClient = await this.prismaService.client.create({
       data: {
-        userId: dto.userId,
+        userId: baseUser.id,
         type: ClientType.PERSONNAL,
       },
     });
@@ -153,11 +169,12 @@ export class ClientService {
       throw new NotFoundException(`Commercial client #${id} not found`);
     }
 
-    if (dto.userId) {
+    const user = await this.prismaService.user.findFirst({ where: { email: dto.email } });
+    if (user?.id) {
       await this.prismaService.client.update({
         where: { id },
         data: {
-          userId: dto.userId,
+          userId: user.id,
         },
       });
     }
@@ -189,11 +206,13 @@ export class ClientService {
       throw new NotFoundException(`Personal client #${id} not found`);
     }
 
-    if (dto.userId) {
+
+    const user = await this.prismaService.user.findFirst({ where: { email: dto.email } });
+    if (user?.id) {
       await this.prismaService.client.update({
         where: { id },
         data: {
-          userId: dto.userId,
+          userId: user.id,
         },
       });
     }

@@ -12,7 +12,7 @@ const Dashboard = () => {
     const navigate = useNavigate()
     
     const { logged } = useAuthStore();
-    const { clients, fetchClients } = useClientStore();
+    const { commercialClients, personalClients, fetchClients } = useClientStore();
     
     const [showPrivate, setShowPrivate] = useState(false)
 
@@ -81,7 +81,7 @@ const Dashboard = () => {
             {/* decoder list */}
             <ul className="flex flex-col gap-3 mt-8">
                 {showPrivate
-                    ? clients.map((c, i) => (
+                    ? personalClients.map((c, i) => (
                           <motion.li
                               initial={{ opacity: 0, y: '100%' }}
                               animate={{
@@ -92,7 +92,7 @@ const Dashboard = () => {
                               className="w-full"
                               key={c.id}
                           >
-                              <Link to={`/decoder/${c.personal.decoderId}`} className="card flex items-center justify-between p-8">
+                              <Link to={`/decoder/${c.decoderId}`} className="card flex items-center justify-between p-8">
                                   <h2 className="font-normal text-white">
                                       {c.user.firstName} {c.user.lastName}
                                   </h2>

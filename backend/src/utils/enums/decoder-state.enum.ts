@@ -4,6 +4,5 @@
 export enum DecoderState {
     ACTIVE, 
     INACTIVE,
-    ERROR
 }
     

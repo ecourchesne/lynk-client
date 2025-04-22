@@ -6,9 +6,9 @@ import { BaseModel } from "src/utils/models/base-model.model";
  */
 export abstract class ClientDto extends BaseModel implements Omit<Prisma.ClientCreateInput, 'user'> {
   /**
-   * ID of the associated user
+   * Email the associated user
    */
-  public userId: number;
+  public email: string;
 
   /**
    * Type of client (COMMERCIAL or PERSONAL)
@@ -22,7 +22,7 @@ export abstract class ClientDto extends BaseModel implements Omit<Prisma.ClientC
     return {
       user: {
         connect: {
-          id: this.userId
+          email: this.email,
         }
       },
       type: this.type,
