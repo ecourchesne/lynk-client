@@ -1,3 +1,4 @@
+import { ClientType } from "src/utils/enums/client-type.enum";
 import { Injectable } from "@nestjs/common";
 import { UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
@@ -5,12 +6,13 @@ import * as jwt from "jsonwebtoken";
 import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
 import { UserCreationDto } from "./dto/user.creation.dto";
+import { decodeActivationKey } from "src/utils/function";
 
 @Injectable()
 export class AuthService {
   private readonly jwtSecret = "supersecretkey";
 
-  public constructor(private prismaService: PrismaService) {}
+  public constructor(private prismaService: PrismaService) { }
 
   /**
    * The function `hashPassword` asynchronously generates a salt and hashes a given password using
@@ -43,47 +45,24 @@ export class AuthService {
       password: hashedPassword,
       firstName: userDto.firstName.toLowerCase(),
       lastName: userDto.lastName.toLowerCase(),
-      email: userDto.email.toLowerCase(),
-      role: "admin",
+      role: userDto.activationKey ? "user" : "admin",
     };
-    if (userDto.activationKey) data.role = "user";
 
-    const user = await this.prismaService.user.create({ data });
+    let user;
 
-    if (!userDto.activationKey) return user;
-    
-    // Extract prefix and ID from activationKey
-    const activationKey = userDto.activationKey.toString();
-    const prefix = activationKey.charAt(0);
-    const id = parseInt(activationKey.slice(1), 10);
-    if (prefix == "1") {
-      // Create a personal client
-      await this.prismaService.client.create({
-        data: {
-          userId: user.id,
-          type: "personnal",
-          personal: {
-            create: {
-              decoderId: id,
-            },
-          },
-        },
-      });
-    } else if (prefix == "2") {
-      // Create a commercial client
-      await this.prismaService.client.create({
-        data: {
-          userId: user.id,
-          type: "commercial",
-          commercial: {
-            create: {
-              companyId: id,
-            },
-          },
-        },
-      });
+    if (userDto.activationKey) {
+      const isValidKey = await this.isValidActivationKey(userDto.activationKey);
+      if (!isValidKey) {
+        throw new UnauthorizedException("Invalid activation key");
+      }
+      user = await this.prismaService.user.update({ where: { email: userDto.email }, data, });
     } else {
-      throw new Error("Invalid activation key prefix");
+      user = await this.prismaService.user.create({
+        data: {
+          ...data,
+          email: userDto.email,
+        },
+      });
     }
 
     return user;
@@ -119,4 +98,15 @@ export class AuthService {
       throw new UnauthorizedException("Invalid or expired token");
     }
   }
+
+  public async isValidActivationKey(activationKey: number): Promise<boolean> {
+    const secret: { type, id } = decodeActivationKey(activationKey.toString());
+    if (secret.type === ClientType.PERSONNAL) {
+      return await this.prismaService.decoder.findUnique({ where: { id: secret.id } }) !== null; // Check if decoder exists
+    } else {
+      return await this.prismaService.company.findUnique({ where: { id: secret.id } }) !== null; // Check if company exists
+    }
+
+  }
 }
+

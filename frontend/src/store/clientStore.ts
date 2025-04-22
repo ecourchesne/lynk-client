@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import api from '@/api'
+import { generateActivationKey } from '@/lib/utils'
 
 type Client = {
     id: string
@@ -77,7 +78,8 @@ export const useClientStore = create<ClientStore>(set => ({
         try {
             const response = await api.post('/client/personal', client)
             const newClient = response.data
-            console.log('New client added:', newClient)
+            const activationKey = generateActivationKey('personal', client.decoderId!)
+            console.log('New client added:', newClient, activationKey)
             set(state => ({
                 clients: [...state.clients, newClient],
                 personalClients: [...state.personalClients, newClient],
@@ -94,7 +96,8 @@ export const useClientStore = create<ClientStore>(set => ({
         try {
             const response = await api.post('/client/commercial', client)
             const newClient = response.data
-            console.log('New client added:', newClient)
+            const activationKey = generateActivationKey('commercial', client.companyId)
+            console.log('New client added:', newClient, activationKey)
             set(state => ({
                 clients: [...state.clients, newClient],
                 commercialClients: [...state.commercialClients, newClient],
