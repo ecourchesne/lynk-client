@@ -74,12 +74,12 @@ model PersonalClient {
 model Decoder {
   id        Int     @id @default(autoincrement())
   name      String?   @db.VarChar(100)
-  model         String   @db.VarChar(100)
-  state         String   @db.VarChar(10)  // Will be either "active" or "inactive"
+  model     String   @db.VarChar(100)
+  state     String   @db.VarChar(10)  // Will be either "active" or "inactive"
   lastRestartedAt DateTime? 
   lastReinitializedAt DateTime? 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   subscriptions SubscriptionItem[] @relation("DecoderSubscriptions") // Many-to-many relationship
@@ -98,11 +98,9 @@ model SubscriptionItem {
   updatedAt DateTime @default(now())
 
   // Relations
-  decoderId Int
-  decoders  Decoder[]         @relation("DecoderSubscriptions") // Many-to-many relationship
+  decoders  Decoder[] @relation("DecoderSubscriptions") // Many-to-many relationship
 
   @@index([type])
-  @@index([decoderId])
 }
 
 model Company {

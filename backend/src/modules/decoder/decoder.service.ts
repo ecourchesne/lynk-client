@@ -39,4 +39,75 @@ export class DecoderService {
       where: { id },
     });
   }
+
+  // Add multiple subscription items to a decoder
+  async addSubscriptionsToDecoder(decoderId: number, subscriptionItemIds: number[]): Promise<Decoder> {
+    return this.prismaService.decoder.update({
+      where: { id: decoderId },
+      data: {
+        subscriptions: {
+          connect: subscriptionItemIds.map((id) => ({ id })),
+        },
+      },
+      include: {
+        subscriptions: true,
+      },
+    });
+  }
+
+  // Remove multiple subscription items from a decoder
+  async removeSubscriptionsFromDecoder(decoderId: number, subscriptionItemIds: number[]): Promise<Decoder> {
+    return this.prismaService.decoder.update({
+      where: { id: decoderId },
+      data: {
+        subscriptions: {
+          disconnect: subscriptionItemIds.map((id) => ({ id })),
+        },
+      },
+      include: {
+        subscriptions: true,
+      },
+    });
+  }
+
+   // Reset the decoder
+   async resetDecoder(id: number): Promise<Decoder> {
+    const resetTime = new Date();
+    return this.prismaService.decoder.update({
+      where: { id },
+      data: {
+        state: 'active', // Assume resetting sets the decoder to active
+        lastRestartedAt: resetTime,
+      },
+    });
+  }
+
+  // Reinitialize the decoder
+  async reinitDecoder(id: number): Promise<Decoder> {
+    const reinitTime = new Date();
+    return this.prismaService.decoder.update({
+      where: { id },
+      data: {
+        lastReinitializedAt: reinitTime,
+      },
+    });
+  }
+
+  // Shutdown the decoder
+  async shutdownDecoder(id: number): Promise<Decoder> {
+    return this.prismaService.decoder.update({
+      where: { id },
+      data: {
+        state: 'inactive', // Assume shutting down sets the decoder to inactive
+      },
+    });
+  }
+
+  // Get decoder info
+  async getDecoderInfo(id: number): Promise<Decoder | null> {
+    return this.prismaService.decoder.findUnique({
+      where: { id },
+    });
+  }
+
 }

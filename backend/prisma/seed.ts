@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { ChannelType } from 'src/utils/enums/channel-type.enum';
 
 const prisma = new PrismaClient();
 
@@ -53,11 +54,49 @@ async function seedCompanies() {
   console.log('4 companies have been created!');
 }
 
+// Seed subscription items
+async function seedSubscriptionItems() {
+  const apps = [
+    { name: 'Netflix', type: "app" },
+    { name: 'Spotify', type: "app" },
+    { name: 'Disney+', type: "app" },
+    { name: 'Amazon Prime Video', type: "app" },
+    { name: 'YouTube Premium', type: "app" },
+  ];
+
+  const channels = [
+    { name: 'CBC', type: "channel" },
+    { name: 'CTV', type: "channel" },
+    { name: 'Global', type: "channel" },
+    { name: 'Citytv', type: "channel" },
+    { name: 'TSN', type: "channel" },
+    { name: 'Sportsnet', type: "channel" },
+    { name: 'CP24', type: "channel" },
+    { name: 'RDS', type: "channel" },
+    { name: 'Teletoon', type: "channel" },
+    { name: 'Treehouse', type: "channel" },
+  ];
+
+  const subscriptionItems = [...apps, ...channels];
+
+  for (const item of subscriptionItems) {
+    await prisma.subscriptionItem.create({
+      data: {
+        name: item.name,
+        type: item.type.toString(),
+      },
+    });
+  }
+
+  console.log('5 apps and 10 channels have been created!');
+}
+
 // Main function to run all seeds
 async function main() {
   console.log('Seeding data...');
   await seedDecoders();
   await seedCompanies();
+  await seedSubscriptionItems();
   console.log('Seeding completed!');
 }
 
