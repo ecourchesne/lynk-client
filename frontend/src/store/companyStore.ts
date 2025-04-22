@@ -3,9 +3,10 @@ import api from '@/api'
 
 interface CompanyStore {
     company: Company | null
-    companies: Company[],
-    getCompanyId: (id: string) => Promise<Company | null>,
+    companies: Company[]
+    getCompanyId: (id: string) => Promise<Company | null>
     getCompanies: () => Promise<Company[] | null>
+    createCompany: (data: { name: string; address: string }) => Promise<{ success: boolean; error: string | null }>
 }
 
 export const useCompanyStore = create<CompanyStore>(set => ({
@@ -33,5 +34,15 @@ export const useCompanyStore = create<CompanyStore>(set => ({
             console.error('Failed to fetch companies:', error)
             return null
         }
-    }	
+    },
+    createCompany: async (data: { name: string; address: string }) => {
+        try {
+            const response = await api.post('/company', data)
+            set(state => ({ companies: [...state.companies, response.data] }))
+            return { success: true, error: null }
+        } catch (error) {
+            console.error('Failed to create company:', error)
+            return { success: false, error: 'Failed to create company' }
+        }
+    },
 }))

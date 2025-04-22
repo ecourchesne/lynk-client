@@ -1,7 +1,10 @@
 import { useAuthStore } from '@/store/authStore'
 import Dashboard from './Dashboard'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
+    const navigate = useNavigate()
+
     const { user } = useAuthStore()
 
     if (!user) {
@@ -11,8 +14,6 @@ const Home = () => {
     if (user.role === 'admin') {
         return <Dashboard />
     }
-
-    return <div>this is gonna the home</div>
 }
 
 export default Home

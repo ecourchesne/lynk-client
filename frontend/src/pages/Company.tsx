@@ -1,20 +1,17 @@
 import Nav from '@/components/ui/nav'
 import { motion } from 'framer-motion'
-import companies from '@/lib/companies.json'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import DecryptedText from '@/components/utils/DecryptText'
-import CopyButton from '@/components/ui/copy-button'
+import { useCompanyStore } from '@/store/companyStore'
 
 const Company = () => {
-    const [company, setCompany] = useState<Company | null>(null)
+    const { company, getCompanyId } = useCompanyStore()
     const { id } = useParams<{ id: string }>()
 
     useEffect(() => {
-        if (id && companies.find(c => c.id === id)) {
-            setCompany(companies.find(c => c.id === id)! as Company)
-        }
-    }, [id])
+        if (id) getCompanyId(id)
+    }, [id, getCompanyId])
 
     if (!company) {
         return (
@@ -42,13 +39,13 @@ const Company = () => {
                 <DecryptedText text={company.name} animateOn="view" sequential />
             </h1>
 
-            <h2 className="text-lg font-normal text-white mt-8 mb-4">Activation Key</h2>
+            {/* <h2 className="text-lg font-normal text-white mt-8 mb-4">Activation Key</h2>
             <div className="flex gap-2">
                 <div className="card w-max h-10 text-white text-xs px-4 flex items-center justify-center">
                     {"111111"}
                 </div>
                 <CopyButton value={"111111"} />
-            </div>
+            </div> */}
 
             {/* decoder list */}
             <h2 className="text-lg font-normal text-white mt-8 mb-4">Decoders</h2>

@@ -1,85 +1,111 @@
-import { create } from 'zustand';
-import api from '@/api';
+import { create } from 'zustand'
+import api from '@/api'
 
 type Client = {
-  id: string;
-  user: User;
-  personal?: {
-    decoderId: string;
-  };
-  commercial?: {
-    decoders: Decoder[];
-  };
-  type: 'personnal' | 'commercial';
-};
-
-type PersonalClient = {
-  id: string;
-  user: User;
-  decoderId: string;
-};
-
-type CommercialClient = {
-  id: string;
-  user: User;
-  decoders: Decoder[];
-};
-
-interface ClientStore {
-  clients: Client[];
-  personalClients: PersonalClient[];
-  commercialClients: CommercialClient[];
-  fetchClients: () => Promise<void>;
-  addClient: (client: { email: string; type: 'personnal' | 'commercial'; decoderId?: number; companyId?: number }) => Promise<void>;
-  clearClients: () => void;
+    id: string
+    user: User
+    personal?: {
+        decoderId: string
+    }
+    commercial?: {
+        decoders: Decoder[]
+    }
+    type: 'personnal' | 'commercial'
 }
 
-export const useClientStore = create<ClientStore>((set) => ({
-  clients: [],
-  personalClients: [],
-  commercialClients: [],
-  fetchClients: async () => {
-    try {
-      const response = await api.get('/client');
-      const clients = response.data;
+type PersonalClient = {
+    id: string
+    user: User
+    decoderId: string
+}
 
-      const personalClients: PersonalClient[] = clients
-        .filter((client: Client) => client.type == 'personnal')
-        .map((client: Client) => ({
-          id: client.id,
-          user: client.user,
-          decoderId: client.personal?.decoderId || '',
-        }));
+type CommercialClient = {
+    id: string
+    user: User
+    decoders: Decoder[]
+}
 
+interface ClientStore {
+    clients: Client[]
+    personalClients: PersonalClient[]
+    commercialClients: CommercialClient[]
+    fetchClients: () => Promise<void>
+    // addClient: (client: { email: string; type: 'personnal' | 'commercial'; decoderId?: number; companyId?: number }) => Promise<void>;
+    addPersonalClient: (client: {
+        email: string
+        decoderId?: number
+    }) => Promise<{ success: boolean; error: string | null }>
+    addCommercialClient: (client: {
+        email: string
+        companyId: number
+    }) => Promise<{ success: boolean; error: string | null }>
+    clearClients: () => void
+}
 
-      const commercialClients: CommercialClient[] = clients
-        .filter((client: Client) => client.type === 'commercial')
-        .map((client: Client) => ({
-          id: client.id,
-          user: client.user,
-          decoders: client.commercial?.decoders || [],
-        }));
-
-      set({ clients, personalClients, commercialClients });
-    } catch (error) {
-      console.error('Failed to fetch clients:', error);
-    }
-  },
-    addClient: async (client: { email: string, type: 'personnal' | 'commercial', decoderId?: number, companyId?: number }) =>
-      {
+export const useClientStore = create<ClientStore>(set => ({
+    clients: [],
+    personalClients: [],
+    commercialClients: [],
+    fetchClients: async () => {
         try {
-          let route = "";
-          if (client.type === 'personnal')
-            route = '/client/personal';
-          else if (client.type === 'commercial')
-            route = '/client/commercial';
-  
-          const response = await api.post(route, client) ;
-  
-          set((state) => ({ clients: [...state.clients, response.data] }));
+            const response = await api.get('/client')
+            const clients = response.data
+            console.log('Fetched clients:', clients)
+
+            const personalClients: PersonalClient[] = clients
+                .filter((client: Client) => client.type == 'personnal')
+                .map((client: Client) => ({
+                    id: client.id,
+                    user: client.user,
+                    decoderId: client.personal?.decoderId || '',
+                }))
+
+            const commercialClients: CommercialClient[] = clients
+                .filter((client: Client) => client.type === 'commercial')
+                .map((client: Client) => ({
+                    id: client.id,
+                    user: client.user,
+                    decoders: client.commercial?.decoders || [],
+                }))
+
+            set({ clients, personalClients, commercialClients })
         } catch (error) {
-          console.error('Failed to add client:', error);
+            console.error('Failed to fetch clients:', error)
         }
-      },
-  clearClients: () => set({ clients: [], personalClients: [], commercialClients: [] }),
-}));
+    },
+    addPersonalClient: async (client: { email: string; decoderId?: number }) => {
+        try {
+            const response = await api.post('/client/personal', client)
+            const newClient = response.data
+            console.log('New client added:', newClient)
+            set(state => ({
+                clients: [...state.clients, newClient],
+                personalClients: [...state.personalClients, newClient],
+            }))
+
+            return { success: true, error: null }
+        } catch (error) {
+            console.error('Failed to add personal client:', error)
+
+            return { success: false, error: 'Failed to add personal client' }
+        }
+    },
+    addCommercialClient: async (client: { email: string; companyId: number }) => {
+        try {
+            const response = await api.post('/client/commercial', client)
+            const newClient = response.data
+            console.log('New client added:', newClient)
+            set(state => ({
+                clients: [...state.clients, newClient],
+                commercialClients: [...state.commercialClients, newClient],
+            }))
+
+            return { success: true, error: null }
+        } catch (error) {
+            console.error('Failed to add commercial client:', error)
+
+            return { success: false, error: 'Failed to add commercial client' }
+        }
+    },
+    clearClients: () => set({ clients: [], personalClients: [], commercialClients: [] }),
+}))

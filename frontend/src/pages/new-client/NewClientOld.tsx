@@ -10,12 +10,12 @@ import { useDecoderStore } from '@/store/decoderStore';
 import { useCompanyStore } from '@/store/companyStore';
 import { useClientStore } from '@/store/clientStore';
 
-const formSchema = z.object({
-    email: z.string().email(''),
-    type: z.enum(['personal', 'commercial']),
-    decoderId: z.string().optional(),
-    companyId: z.string().optional(),
-});
+// const formSchema = z.object({
+//     email: z.string().email(''),
+//     type: z.enum(['personal', 'commercial']),
+//     decoderId: z.string().optional(),
+//     companyId: z.string().optional(),
+// });
 
 const NewClient = () => {
     const [state, setState] = useState<RequestStatus>('idle');

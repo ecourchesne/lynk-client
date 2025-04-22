@@ -17,6 +17,7 @@ export class CompanyService {
   async getCompany(id: number): Promise<Company | null> {
     return this.prismaService.company.findUnique({
       where: { id },
+      include: { decoders: true },
     });
   }
 
