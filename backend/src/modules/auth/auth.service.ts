@@ -1,3 +1,4 @@
+import { ClientType } from "src/utils/enums/client-type.enum";
 import { Injectable } from "@nestjs/common";
 import { UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
@@ -5,6 +6,7 @@ import * as jwt from "jsonwebtoken";
 import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
 import { UserCreationDto } from "./dto/user.creation.dto";
+import { decodeActivationKey } from "src/utils/function";
 
 @Injectable()
 export class AuthService {
@@ -43,58 +45,64 @@ export class AuthService {
       password: hashedPassword,
       firstName: userDto.firstName.toLowerCase(),
       lastName: userDto.lastName.toLowerCase(),
-      email: userDto.email.toLowerCase(),
-      role: "admin",
+      role: userDto.activationKey ? "user" : "admin",
     };
-    if (userDto.activationKey) data.role = "user";
 
-    const user = await this.prismaService.user.create({ data });
+    let user;
 
-    if (!userDto.activationKey) return user;
-    
-    // Extract prefix and ID from activationKey
-    const activationKey = userDto.activationKey.toString();
-    const prefix = activationKey.charAt(0);
-    const id = parseInt(activationKey.slice(1), 10);
-    if (prefix == "1") {
-      // Create a personal client
-      await this.prismaService.client.create({
-        data: {
-          userId: user.id,
-          type: "personnal",
-          personal: {
-            create: {
-              decoderId: id,
-            },
-          },
-        },
-      });
-    } else if (prefix == "2") {
-      // Create a commercial client
-      await this.prismaService.client.create({
-        data: {
-          userId: user.id,
-          type: "commercial",
-          commercial: {
-            create: {
-              companyId: id,
+    if (userDto.activationKey) {
+      const isValidKey = await this.isValidActivationKey(userDto.activationKey);
+      if (!isValidKey) {
+        throw new UnauthorizedException("Invalid activation key");
+      }
+      user = await this.prismaService.user.update({
+        where: { email: userDto.email },
+        data,
+        include: {
+          client: {
+            include: {
+              commercial: true,
+              personal: true,
             },
           },
         },
       });
     } else {
-      throw new Error("Invalid activation key prefix");
+      user = await this.prismaService.user.create({
+        data: {
+          ...data,
+          email: userDto.email,
+        },
+      });
     }
 
     return user;
   }
 
-  public async login(email: string, password: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { email } });
+  public async login(
+    email: string,
+    password: string
+  ): Promise<User & { companyId: number | null; decoderId: number | null }> {
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+      include: {
+        client: {
+          include: {
+            commercial: true,
+            personal: true,
+          },
+        },
+      },
+    });
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException("Invalid credentials");
     }
-    return user;
+
+    const companyId = user.client?.commercial?.companyId || null;
+    const decoderId = user.client?.personal?.decoderId || null;
+
+    return { ...user, companyId, decoderId };
   }
 
   public async validateToken(token: string): Promise<void> {
@@ -102,6 +110,23 @@ export class AuthService {
       return jwt.verify(token, this.jwtSecret);
     } catch (error) {
       throw new UnauthorizedException("Invalid or expired token");
+    }
+  }
+
+  public async isValidActivationKey(activationKey: number): Promise<boolean> {
+    const secret: { type; id } = decodeActivationKey(activationKey.toString());
+    if (secret.type === ClientType.PERSONNAL) {
+      return (
+        (await this.prismaService.decoder.findUnique({
+          where: { id: secret.id },
+        })) !== null
+      ); // Check if decoder exists
+    } else {
+      return (
+        (await this.prismaService.company.findUnique({
+          where: { id: secret.id },
+        })) !== null
+      ); // Check if company exists
     }
   }
 }

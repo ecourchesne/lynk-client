@@ -5,17 +5,18 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import StateButton from '@/components/ui/form-button'
-import { useAuthStore } from '@/store/authStore'
-import { Link } from 'react-router-dom'
 import DecryptedText from '@/components/utils/DecryptText'
+import { useCompanyStore } from '@/store/companyStore'
+import { useNavigate } from 'react-router-dom'
 
 const formSchema = z.object({
-    email: z.string().email(''),
-    pwd: z.string().min(8, 'Password must be at least 8 characters long'),
+    name: z.string().min(1, { message: 'Name is required' }),
+    address: z.string().min(1, { message: 'Address is required' }),
 })
 
-const NewClient = () => {
-    const login = useAuthStore(state => state.login)
+const NewCompany = () => {
+    const navigate = useNavigate()
+    const { createCompany } = useCompanyStore()
 
     const [state, setState] = useState<RequestStatus>('idle')
     const [error, setError] = useState<string | null>(null)
@@ -23,8 +24,8 @@ const NewClient = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: '',
-            pwd: '',
+            name: '',
+            address: '',
         },
     })
 
@@ -32,14 +33,17 @@ const NewClient = () => {
         setError(null)
         setState('loading')
 
-        const { success, error } = await login(data.email, data.pwd)
+        const { success, error } = await createCompany(data)
 
         if (success) {
             setState('success')
+            navigate('/')
         } else {
             setState('error')
             setError(error)
         }
+
+        setState('success')
     }
 
     return (
@@ -48,18 +52,20 @@ const NewClient = () => {
 
             <main className="w-cont-sm rounded-[12px]">
                 <h1 className="mb-8">
-                    <DecryptedText animateOn="view" speed={70} text="New Client" />
+                    <DecryptedText animateOn="view" speed={70} text="New Company" />
                 </h1>
 
                 <FormProvider {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormMessage>{error && <p className="mb-8 text-sm text-red-600">{error}</p>}</FormMessage>
+
+                        {/* Name Field */}
                         <FormField
                             control={form.control}
-                            name="email"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>Company Name</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -67,34 +73,30 @@ const NewClient = () => {
                                 </FormItem>
                             )}
                         />
+
+                        {/* Name Field */}
                         <FormField
                             control={form.control}
-                            name="pwd"
+                            name="address"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel>Adress</FormLabel>
                                     <FormControl>
-                                        <Input type="password" {...field} />
+                                        <Input {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         <StateButton state={state} type="submit">
-                            Log In
+                            Create
                         </StateButton>
                     </form>
                 </FormProvider>
             </main>
-
-            <p className="w-cont-sm">
-                New client?{' '}
-                <Link to="/sign-up" className="simple-link">
-                    Sign Up
-                </Link>
-            </p>
         </div>
     )
 }
 
-export default NewClient
+export default NewCompany

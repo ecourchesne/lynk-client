@@ -27,18 +27,19 @@ declare global {
 
     type Company = {
         id: string
-        accountActivationKey: string
         name: string
         address: string
         decoders: Decoder[]
     }
 
     type Decoder = {
-        id: string
+        id: number
         name: string
         model: string
         state: 'active' | 'inactive' | null
         subscriptions: SubscriptionItem[]
+        lastReinitializedAt: string | null
+        lastRestartedAt: string | null
     }
 
     type SubscriptionItem = {
