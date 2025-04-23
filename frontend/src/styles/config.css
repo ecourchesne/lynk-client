@@ -16,6 +16,6 @@
     --montech: 'Montech', 'monospace';
     --poppins: 'Poppins', 'sans-serif';
 
-    --cont: min(1080px, 85%);
-    --cont-sm: min(540px, 85%);
+    --cont: min(1080px, 85vw);
+    --cont-sm: min(540px, 85vw);
 }

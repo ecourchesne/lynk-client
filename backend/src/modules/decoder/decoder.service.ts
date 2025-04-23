@@ -41,7 +41,10 @@ export class DecoderService {
   }
 
   // Add multiple subscription items to a decoder
-  async addSubscriptionsToDecoder(decoderId: number, subscriptionItemIds: number[]): Promise<Decoder> {
+  async addSubscriptionsToDecoder(
+    decoderId: number,
+    subscriptionItemIds: number[]
+  ): Promise<Decoder> {
     return this.prismaService.decoder.update({
       where: { id: decoderId },
       data: {
@@ -56,7 +59,10 @@ export class DecoderService {
   }
 
   // Remove multiple subscription items from a decoder
-  async removeSubscriptionsFromDecoder(decoderId: number, subscriptionItemIds: number[]): Promise<Decoder> {
+  async removeSubscriptionsFromDecoder(
+    decoderId: number,
+    subscriptionItemIds: number[]
+  ): Promise<Decoder> {
     return this.prismaService.decoder.update({
       where: { id: decoderId },
       data: {
@@ -70,13 +76,13 @@ export class DecoderService {
     });
   }
 
-   // Reset the decoder
-   async resetDecoder(id: number): Promise<Decoder> {
+  // Reset the decoder
+  async resetDecoder(id: number): Promise<Decoder> {
     const resetTime = new Date();
     return this.prismaService.decoder.update({
       where: { id },
       data: {
-        state: 'active', // Assume resetting sets the decoder to active
+        state: "active", // Assume resetting sets the decoder to active
         lastRestartedAt: resetTime,
       },
     });
@@ -88,6 +94,7 @@ export class DecoderService {
     return this.prismaService.decoder.update({
       where: { id },
       data: {
+        state: "active",
         lastReinitializedAt: reinitTime,
       },
     });
@@ -98,7 +105,10 @@ export class DecoderService {
     return this.prismaService.decoder.update({
       where: { id },
       data: {
-        state: 'inactive', // Assume shutting down sets the decoder to inactive
+        state: "inactive", // Assume shutting down sets the decoder to inactive
+      },
+      include: {
+        subscriptions: true,
       },
     });
   }
@@ -109,5 +119,4 @@ export class DecoderService {
       where: { id },
     });
   }
-
 }

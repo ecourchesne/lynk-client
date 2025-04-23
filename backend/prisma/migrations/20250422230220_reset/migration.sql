@@ -74,10 +74,8 @@ CREATE TABLE `SubscriptionItem` (
     `name` VARCHAR(100) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `decoderId` INTEGER NOT NULL,
 
     INDEX `SubscriptionItem_type_idx`(`type`),
-    INDEX `SubscriptionItem_decoderId_idx`(`decoderId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

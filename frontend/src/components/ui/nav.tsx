@@ -4,7 +4,9 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 
 const Nav = () => {
-    const { user, logout } = useAuthStore()
+    const firstname = useAuthStore(state => state.user?.firstName)
+    const lastname = useAuthStore(state => state.user?.lastName)
+    const logout = useAuthStore(state => state.logout)
     const navigate = useNavigate()
 
     const handleLogout = () => {
@@ -18,7 +20,7 @@ const Nav = () => {
 
             <Popover>
                 <PopoverTrigger className="font-montech text-sm font-light card pl-3 pr-2 py-1 text-white tracking-widest">
-                    {user?.firstName.substring(0, 1)}.{user?.lastName.substring(0, 1)}.
+                    {firstname?.substring(0, 1)}.{lastname?.substring(0, 1)}.
                 </PopoverTrigger>
                 <PopoverContent className="border-0 p-0" side="left" align="end" sideOffset={6}>
                     <motion.button

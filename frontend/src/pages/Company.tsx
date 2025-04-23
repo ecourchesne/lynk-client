@@ -4,8 +4,10 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import DecryptedText from '@/components/utils/DecryptText'
 import { useCompanyStore } from '@/store/companyStore'
+import { useAuthStore } from '@/store/authStore'
 
 const Company = () => {
+    const { user } = useAuthStore()
     const { company, getCompanyId } = useCompanyStore()
     const { id } = useParams<{ id: string }>()
 
@@ -15,7 +17,7 @@ const Company = () => {
 
     if (!company) {
         return (
-            <div className="w-cont-sm mx-auto py-32">
+            <div className="w-cont-sm mx-auto md:py-32 pb-12">
                 <Nav />
                 <h1 className="text-center py-16">Company not found</h1>
             </div>
@@ -23,29 +25,23 @@ const Company = () => {
     }
 
     return (
-        <div className="w-cont-sm mx-auto py-32">
+        <div className="w-cont-sm mx-auto md:py-32 pb-12">
             <Nav />
 
             {/* Back to dashboard */}
-            <Link
-                to="/"
-                className="block mt-8 mb-12 font-poppins text-sm text-white-60 hover:text-white duration-200 ease-in-out font-normal"
-            >
-                <span className="mr-2">{'<'}</span> Dashboard
-            </Link>
+            {user?.role === 'admin' && (
+                <Link
+                    to="/"
+                    className="block mt-8 mb-12 font-poppins text-sm text-white-60 hover:text-white duration-200 ease-in-out font-normal"
+                >
+                    <span className="mr-2">{'<'}</span> Dashboard
+                </Link>
+            )}
 
             {/* header */}
-            <h1>
+            <h1 className={user?.role !== 'admin' ? 'mt-12' : ''}>
                 <DecryptedText text={company.name} animateOn="view" sequential />
             </h1>
-
-            {/* <h2 className="text-lg font-normal text-white mt-8 mb-4">Activation Key</h2>
-            <div className="flex gap-2">
-                <div className="card w-max h-10 text-white text-xs px-4 flex items-center justify-center">
-                    {"111111"}
-                </div>
-                <CopyButton value={"111111"} />
-            </div> */}
 
             {/* decoder list */}
             <h2 className="text-lg font-normal text-white mt-8 mb-4">Decoders</h2>

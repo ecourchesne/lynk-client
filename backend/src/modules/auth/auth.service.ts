@@ -12,7 +12,7 @@ import { decodeActivationKey } from "src/utils/function";
 export class AuthService {
   private readonly jwtSecret = "supersecretkey";
 
-  public constructor(private prismaService: PrismaService) { }
+  public constructor(private prismaService: PrismaService) {}
 
   /**
    * The function `hashPassword` asynchronously generates a salt and hashes a given password using
@@ -55,7 +55,18 @@ export class AuthService {
       if (!isValidKey) {
         throw new UnauthorizedException("Invalid activation key");
       }
-      user = await this.prismaService.user.update({ where: { email: userDto.email }, data, });
+      user = await this.prismaService.user.update({
+        where: { email: userDto.email },
+        data,
+        include: {
+          client: {
+            include: {
+              commercial: true,
+              personal: true,
+            },
+          },
+        },
+      });
     } else {
       user = await this.prismaService.user.create({
         data: {
@@ -68,7 +79,10 @@ export class AuthService {
     return user;
   }
 
-  public async login(email: string, password: string): Promise<User & { companyId: number | null; decoderId: number | null }> {
+  public async login(
+    email: string,
+    password: string
+  ): Promise<User & { companyId: number | null; decoderId: number | null }> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
       include: {
@@ -100,13 +114,19 @@ export class AuthService {
   }
 
   public async isValidActivationKey(activationKey: number): Promise<boolean> {
-    const secret: { type, id } = decodeActivationKey(activationKey.toString());
+    const secret: { type; id } = decodeActivationKey(activationKey.toString());
     if (secret.type === ClientType.PERSONNAL) {
-      return await this.prismaService.decoder.findUnique({ where: { id: secret.id } }) !== null; // Check if decoder exists
+      return (
+        (await this.prismaService.decoder.findUnique({
+          where: { id: secret.id },
+        })) !== null
+      ); // Check if decoder exists
     } else {
-      return await this.prismaService.company.findUnique({ where: { id: secret.id } }) !== null; // Check if company exists
+      return (
+        (await this.prismaService.company.findUnique({
+          where: { id: secret.id },
+        })) !== null
+      ); // Check if company exists
     }
-
   }
 }
-

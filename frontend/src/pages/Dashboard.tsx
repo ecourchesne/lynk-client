@@ -15,7 +15,7 @@ const Dashboard = () => {
     const { personalClients, fetchClients } = useClientStore()
     const { companies, getCompanies } = useCompanyStore()
 
-    const [showPrivate, setShowPrivate] = useState(false)
+    const [showPrivate, setShowPrivate] = useState(true)
 
     useEffect(() => {
         fetchClients()
@@ -29,7 +29,7 @@ const Dashboard = () => {
     }, [logged, navigate])
 
     return (
-        <div className="w-cont-sm mx-auto py-32">
+        <div className="w-cont-sm mx-auto md:py-32 pb-12">
             <Nav />
 
             {/* quick actions */}

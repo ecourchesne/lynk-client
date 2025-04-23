@@ -5,7 +5,9 @@ type UserAttributes = {
     firstName: string
     lastName: string
     email: string
-    role: string
+    role: 'admin' | 'employee' | 'individual'
+    companyId?: string
+    decoderId?: string
 }
 
 interface AuthStore {
@@ -35,11 +37,32 @@ export const useAuthStore = create<AuthStore>(set => ({
     login: async (email, password) => {
         try {
             const response = await api.post('/auth/login', { email, password })
-            const { firstName, lastName, email: _email, role } = response.data
+            const { firstName, lastName, email: _email, role, companyId, decoderId } = response.data
+            console.log(response.data)
 
-            set({ logged: true, user: { firstName, lastName, email: _email, role } })
+            set({
+                logged: true,
+                user: {
+                    firstName,
+                    lastName,
+                    email: _email,
+                    role: role === 'admin' ? 'admin' : decoderId ? 'individual' : 'employee',
+                    companyId: companyId || undefined,
+                    decoderId: decoderId || undefined,
+                },
+            })
             localStorage.setItem('logged', 'yeah buddy')
-            localStorage.setItem('user', JSON.stringify({ firstName, lastName, email: _email, role }))
+            localStorage.setItem(
+                'user',
+                JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: _email,
+                    role: role === 'admin' ? 'admin' : decoderId ? 'individual' : 'employee',
+                    companyId: companyId || undefined,
+                    decoderId: decoderId || undefined,
+                })
+            )
 
             return { success: true, error: null }
         } catch (error) {
@@ -52,27 +75,38 @@ export const useAuthStore = create<AuthStore>(set => ({
     register: async (firstName: string, lastName: string, email: string, password: string, activationKey: string) => {
         try {
             const response = await api.post('/auth/register', { firstName, lastName, email, password, activationKey })
-            const { firstName: fn, lastName: ln, email: _email, role } = response.data
+            console.log(response.data)
+            const { firstName: fn, lastName: ln, email: _email, role, companyId, decoderId } = response.data
 
-            set({ logged: true, user: { firstName: fn, lastName: ln, email: _email, role } })
+            set({
+                logged: true,
+                user: {
+                    firstName: fn,
+                    lastName: ln,
+                    email: _email,
+                    role: role === 'admin' ? 'admin' : decoderId ? 'individual' : 'employee',
+                    companyId: companyId || undefined,
+                    decoderId: decoderId || undefined,
+                },
+            })
             localStorage.setItem('logged', 'yeah buddy')
-            localStorage.setItem('user', JSON.stringify({ firstName: fn, lastName: ln, email: _email, role }))
+            localStorage.setItem(
+                'user',
+                JSON.stringify({
+                    firstName: fn,
+                    lastName: ln,
+                    email: _email,
+                    role: role === 'admin' ? 'admin' : decoderId ? 'individual' : 'employee',
+                    companyId: companyId || undefined,
+                    decoderId: decoderId || undefined,
+                })
+            )
             return { success: true, error: null }
         } catch (error) {
             set({ logged: false, user: null })
             localStorage.removeItem('logged')
             localStorage.removeItem('user')
             console.error('Registration failed:', error)
-            return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
-        }
-    },
-    addClient: async ( email: string, companyId?: string, decoderId?: string ) => {
-        try {
-            //const response = await api.post('/clients/add', identifier)
-           // console.log('Client added successfully:', response.data)
-            return { success: true, error: null }
-        } catch (error) {
-            console.error('Adding client failed:', error)
             return { success: false, error: (error as any)?.message || 'Something went wrong. Please try again.' }
         }
     },

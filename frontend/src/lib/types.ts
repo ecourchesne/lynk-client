@@ -33,11 +33,13 @@ declare global {
     }
 
     type Decoder = {
-        id: string
+        id: number
         name: string
         model: string
         state: 'active' | 'inactive' | null
         subscriptions: SubscriptionItem[]
+        lastReinitializedAt: string | null
+        lastRestartedAt: string | null
     }
 
     type SubscriptionItem = {
